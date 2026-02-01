@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibecoder | Frontend Developer</title>
+    <meta name="description" content="Portfolio of a Vibecoder & Frontend Developer building modern web experiences.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+    <!-- Ionicons for Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            // https://dashboard.emailjs.com/admin/account
+            emailjs.init('YOUR_PUBLIC_KEY');
+        })();
+    </script>
+</head>
+
+<body>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="hidden" aria-label="Scroll to top">
+        <ion-icon name="arrow-up-outline"></ion-icon>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#hero" class="logo">Vincent<span class="highlight">Vibes</span>.</a>
+            <ul class="nav-links">
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu">
+        <ul class="mobile-nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="container hero-content">
+            <h1 class="hero-name">Vincent <span class="gradient-text">Vibes</span></h1>
+            <h2 class="hero-title">Vibecoder | Full-stack Web Developer</h2>
+            <p class="hero-tagline">Vibecoder building clean, modern web experiences with HTML, CSS,
+                JavaScript,Typescript,React,Node,supabase.</p>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">View Projects</a>
+                <a href="#contact" class="btn btn-secondary">Contact Me</a>
+            </div>
+        </div>
+        <div class="hero-background"></div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">About <span class="highlight">Me</span></h2>
+            <div class="about-content">
+                <div class="about-text-card">
+                    <p>I’m a vibecoder who builds modern web experiences using HTML, CSS, and JavaScript. I combine
+                        creativity with logic to turn ideas into fast, clean, and responsive applications.</p>
+                    <p>I use AI as a development partner not a crutch which allows me to move quickly while staying
+                        in full control of my code. My focus is on writing understandable, scalable code and delivering
+                        interfaces that feel smooth and professional.</p>
+                    <p>I’m actively building real-world projects, sharpening my skills, and preparing for bigger
+                        opportunities in tech and freelancing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="container">
+            <h2 class="section-title">My <span class="highlight">Skills</span></h2>
+            <div class="skills-grid">
+                <!-- Frontend -->
+                <div class="skill-category">
+                    <h3>Frontend</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag"><ion-icon name="logo-html5"></ion-icon> HTML5</span>
+                        <span class="skill-tag"><ion-icon name="logo-css3"></ion-icon> CSS3</span>
+                        <span class="skill-tag"><ion-icon name="logo-javascript"></ion-icon> JavaScript</span>
+                        <span class="skill-tag"><ion-icon name="phone-portrait-outline"></ion-icon> Responsive</span>
+                    </div>
+                </div>
+                <!-- Tools -->
+                <div class="skill-category">
+                    <h3>Tools</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag"><ion-icon name="git-branch-outline"></ion-icon> Git</span>
+                        <span class="skill-tag"><ion-icon name="logo-github"></ion-icon> GitHub</span>
+                        <span class="skill-tag"><ion-icon name="code-slash-outline"></ion-icon> VS Code</span>
+                    </div>
+                </div>
+                <!-- Others -->
+                <div class="skill-category">
+                    <h3>Others</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag"><ion-icon name="color-palette-outline"></ion-icon> UI/UX Basics</span>
+                        <span class="skill-tag"><ion-icon name="flash-outline"></ion-icon> Performance</span>
+                        <span class="skill-tag"><ion-icon name="accessibility-outline"></ion-icon> Accessibility</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <div class="container">
+            <h2 class="section-title">Featured <span class="highlight">Projects</span></h2>
+            <div id="projects-grid" class="projects-grid">
+                <!-- Projects will be injected here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title">Get In <span class="highlight">Touch</span></h2>
+            <div class="contact-wrapper">
+
+                <div class="contact-info">
+                    <p class="contact-desc">Have a project in mind or just want to say hi? Fill out the form or connect
+                        with me on social media.</p>
+                    <div class="social-links">
+                        <a href="#" target="_blank" aria-label="GitHub"><ion-icon name="logo-github"></ion-icon></a>
+                        <a href="#" target="_blank" aria-label="LinkedIn"><ion-icon name="logo-linkedin"></ion-icon></a>
+                        <a href="mailto:hello@vibecoder.dev" aria-label="Email"><ion-icon
+                                name="mail-outline"></ion-icon></a>
+                    </div>
+                </div>
+
+                <form id="contact-form" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" placeholder="John Doe">
+                        <span class="error-msg" id="name-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="john@example.com">
+                        <span class="error-msg" id="email-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Your message here..."></textarea>
+                        <span class="error-msg" id="message-error"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+                    <div id="form-status" class="form-status"></div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; <span id="year"></span> Vibecoder. All rights reserved.</p>
+            <div class="footer-socials">
+                <a href="#" aria-label="GitHub"><ion-icon name="logo-github"></ion-icon></a>
+                <a href="#" aria-label="LinkedIn"><ion-icon name="logo-linkedin"></ion-icon></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

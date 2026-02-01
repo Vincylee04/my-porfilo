@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | Vibecoder</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Admin Specific Styles */
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            padding-top: 100px;
+        }
+
+        .auth-box {
+            max-width: 400px;
+            margin: 100px auto;
+            background: var(--glass-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .dashboard {
+            display: none;
+            /* Hidden by default */
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Project List in Admin */
+        .admin-project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Message List */
+        .message-item {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .meta {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Nav (Simplified for Admin) -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Vibe<span class="highlight">coder</span> Admin</a>
+            <button id="logoutBtn" class="btn btn-secondary" style="display: none;">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Login View -->
+    <div id="login-view" class="auth-box">
+        <h2>Admin Login</h2>
+        <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Enter your credentials to manage content.</p>
+        <form id="login-form">
+            <div class="form-group">
+                <input type="email" id="login-email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="login-password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <p id="login-error" class="error-msg" style="display: none; margin-top: 1rem;"></p>
+            <p style="margin-top: 1rem; color: var(--text-secondary);">
+                <span id="auth-toggle-text">Don't have an account?</span>
+                <a href="#" id="auth-toggle" style="color: var(--accent-color);">Sign Up</a>
+            </p>
+        </form>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="admin-container dashboard">
+
+        <div class="top-bar">
+            <h1>Dashboard</h1>
+            <p id="user-email" style="color: var(--highlight);"></p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('projects-tab')">Manage Projects</button>
+            <button class="tab-btn" onclick="switchTab('messages-tab')">View Messages</button>
+        </div>
+
+        <!-- Projects Tab -->
+        <div id="projects-tab" class="tab-content active">
+            <div class="grid-2">
+                <!-- Add Project Form -->
+                <div>
+                    <h3>Add New Project</h3>
+                    <form id="add-project-form">
+                        <div class="form-group">
+                            <label>Project Title</label>
+                            <input type="text" id="p-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="p-desc" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Tech Stack (comma separated)</label>
+                            <input type="text" id="p-tech" placeholder="HTML, CSS, JS">
+                        </div>
+                        <div class="form-group">
+                            <label>Demo URL</label>
+                            <input type="url" id="p-demo">
+                        </div>
+                        <div class="form-group">
+                            <label>Code URL</label>
+                            <input type="url" id="p-code">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Project</button>
+                    </form>
+                </div>
+
+                <!-- Existing Projects List -->
+                <div>
+                    <h3>Existing Projects</h3>
+                    <div id="admin-projects-list">
+                        <!-- Loaded dynamically -->
+                        <p style="color: var(--text-secondary);">Loading projects...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="messages-tab" class="tab-content">
+            <h3>Inbox</h3>
+            <div id="messages-list">
+                <!-- Loaded dynamically -->
+                <p style="color: var(--text-secondary);">Loading messages...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="admin.js"></script>
+    <script>
+        // Simple Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
