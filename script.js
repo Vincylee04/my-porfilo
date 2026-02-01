@@ -5,8 +5,17 @@ const SUPABASE_URL = 'https://xpnzszalqjyugegenrjq.supabase.co';
 // TODO: PASTE YOUR SUPABASE ANON KEY BELOW
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwbnpzemFscWp5dWdlZ2VucmpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2Mzc3MjAsImV4cCI6MjA4NTIxMzcyMH0.tvNLv_JkwdaIXnLmU3clnZqgwVkpoWEwqwqjyL5xi-Q';
 
-// Initialize Client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Initialize Client (Safely)
+let supabase = null;
+try {
+    if (window.supabase) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } else {
+        console.error('Supabase SDK not loaded.');
+    }
+} catch (err) {
+    console.error('Supabase initialization failed:', err);
+}
 
 /* =========================================
    DOM ELEMENTS
@@ -26,6 +35,7 @@ const mobileMenu = document.querySelector('.mobile-menu');
 document.addEventListener('DOMContentLoaded', () => {
     fetchProjects();
     updateCopyrightYear();
+    setupMobileMenu(); // Setup UI listeners immediately
 });
 
 /* =========================================
@@ -34,8 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 1. Fetch & Render Projects
 async function fetchProjects() {
+    if (!projectsGrid) return; // Guard clause
+
     if (!supabase) {
-        projectsGrid.innerHTML = '<p style="color:var(--text-secondary)">Supabase not configured. Please add your API Key in script.js</p>';
+        console.warn('Supabase not available. Projects will not load.');
+        projectsGrid.innerHTML = '<p style="color:var(--text-secondary)">Failed to connect to database. Please check connection.</p>';
         return;
     }
 
@@ -74,80 +87,87 @@ async function fetchProjects() {
 
 // 2. Copyright Year
 function updateCopyrightYear() {
-    yearSpan.textContent = new Date().getFullYear();
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
 }
 
 // 3. Form Validation & Submission
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    if (!supabase) {
-        alert("Supabase not configured.");
-        return;
-    }
-
-    const name = document.getElementById('name');
-    const email = document.getElementById('email');
-    const message = document.getElementById('message');
-    const statusDiv = document.getElementById('form-status');
-    const btn = contactForm.querySelector('button');
-
-    let isValid = true;
-
-    // Reset errors
-    document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
-    statusDiv.textContent = '';
-
-    // Validate
-    if (name.value.trim() === '') { showError('name-error', 'Name is required'); isValid = false; }
-    if (!isValidEmail(email.value)) { showError('email-error', 'Please enter a valid email'); isValid = false; }
-    if (message.value.trim() === '') { showError('message-error', 'Message cannot be empty'); isValid = false; }
-
-    if (isValid) {
-        // Sending...
-        const originalText = btn.textContent;
-        btn.textContent = 'Sending...';
-        btn.disabled = true;
-
-        // Insert into Supabase
-        const { error } = await supabase.from('messages').insert([{
-            name: name.value,
-            email: email.value,
-            message: message.value
-        }]);
-
-        if (error) {
-            statusDiv.className = 'form-status error';
-            statusDiv.textContent = 'Error sending message. Please try again.';
-            console.error(error);
-        } else {
-            statusDiv.className = 'form-status success';
-            statusDiv.textContent = 'Message sent successfully!';
-
-            // Send Email Notification via EmailJS
-            // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with actual IDs from EmailJS dashboard
-            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
-                from_name: name.value,
-                from_email: email.value,
-                message: message.value
-            }).then(function () {
-                console.log('Email sent successfully!');
-            }, function (error) {
-                console.log('Email failed to send...', error);
-            });
-
-            contactForm.reset();
+        if (!supabase) {
+            alert("Database connection unavailable. Please email directly.");
+            return;
         }
 
-        btn.textContent = originalText;
-        btn.disabled = false;
-    }
-});
+        const name = document.getElementById('name');
+        const email = document.getElementById('email');
+        const message = document.getElementById('message');
+        const statusDiv = document.getElementById('form-status');
+        const btn = contactForm.querySelector('button');
+
+        let isValid = true;
+
+        // Reset errors
+        document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+        statusDiv.textContent = '';
+
+        // Validate
+        if (name.value.trim() === '') { showError('name-error', 'Name is required'); isValid = false; }
+        if (!isValidEmail(email.value)) { showError('email-error', 'Please enter a valid email'); isValid = false; }
+        if (message.value.trim() === '') { showError('message-error', 'Message cannot be empty'); isValid = false; }
+
+        if (isValid) {
+            // Sending...
+            const originalText = btn.textContent;
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            // Insert into Supabase
+            const { error } = await supabase.from('messages').insert([{
+                name: name.value,
+                email: email.value,
+                message: message.value
+            }]);
+
+            if (error) {
+                statusDiv.className = 'form-status error';
+                statusDiv.textContent = 'Error sending message. Please try again.';
+                console.error(error);
+            } else {
+                statusDiv.className = 'form-status success';
+                statusDiv.textContent = 'Message sent successfully!';
+
+                // Send Email Notification via EmailJS
+                if (window.emailjs) {
+                    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+                        from_name: name.value,
+                        from_email: email.value,
+                        message: message.value
+                    }).then(function () {
+                        console.log('Email sent successfully!');
+                    }, function (error) {
+                        console.log('Email failed to send...', error);
+                    });
+                }
+
+                contactForm.reset();
+            }
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    });
+}
 
 function showError(id, message) {
     const el = document.getElementById(id);
-    el.textContent = message;
-    el.style.display = 'block';
+    if (el) {
+        el.textContent = message;
+        el.style.display = 'block';
+    }
 }
 
 function isValidEmail(email) {
@@ -174,23 +194,37 @@ window.addEventListener('scroll', () => {
         }
     });
 
-    if (window.scrollY > 500) {
-        scrollToTopBtn.classList.remove('hidden');
-    } else {
-        scrollToTopBtn.classList.add('hidden');
+    if (scrollToTopBtn) {
+        if (window.scrollY > 500) {
+            scrollToTopBtn.classList.remove('hidden');
+        } else {
+            scrollToTopBtn.classList.add('hidden');
+        }
     }
 });
 
-scrollToTopBtn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-hamburger.addEventListener('click', () => {
-    mobileMenu.classList.toggle('active');
-});
-
-document.querySelectorAll('.mobile-nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-        mobileMenu.classList.remove('active');
+if (scrollToTopBtn) {
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-});
+}
+
+// 5. Mobile Menu Setup (Robust)
+function setupMobileMenu() {
+    if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            hamburger.classList.toggle('active'); // Optional: Added for CSS animation potential
+        });
+
+        // Close menu when clicking links
+        document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+    } else {
+        console.warn("Mobile menu elements not found.");
+    }
+}
