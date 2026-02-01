@@ -657,8 +657,13 @@ footer {
 
     .hamburger {
         display: flex;
+        position: relative;
+        /* Required for z-index */
         z-index: 2001;
-        /* Above mobile menu */
+        padding: 10px;
+        /* Increase tap area */
+        margin-right: -10px;
+        /* Align visually despite padding */
     }
 
     /* Hamburger Animation */
